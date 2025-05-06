@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>愉快的聚會：好主人和好客人</title>
+    <style>
+        /* 基本樣式設定 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', '微軟正黑體', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f6ff;
+            color: #181818;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: radial-gradient(#D4AF37 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .game-container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            padding: 20px;
+            text-align: center;
+            border: 3px solid #D4AF37;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            color: #D4AF37;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.05);
+        }
+        
+        .subtitle {
+            color: #181818;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .character {
+            width: 120px;
+            height: 120px;
+            margin: 10px auto;
+            background-color: #FFD700;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background: radial-gradient(circle at 30% 30%, #FFE766, #FFD700);
+        }
+        
+        .character .face {
+            position: absolute;
+            top: 30%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 24px;
+        }
+        
+        .character::before {
+            content: "";
+            position: absolute;
+            top: -20px;
+            left: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #181818;
+            border-radius: 50%;
+            transform: skewX(10deg);
+        }
+        
+        .character::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            margin: 0 auto;
+            width: 40px;
+            height: 15px;
+            background-color: #FF6B6B;
+            border-radius: 50%;
+        }
+        
+        .question-container {
+            background-color: #f0f0f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .question {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .question-number {
+            display: inline-block;
+            background-color: #D4AF37;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            line-height: 30px;
+            text-align: center;
+            margin-right: 10px;
+        }
+        
+        .options {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .option:hover {
+            transform: scale(1.05);
+        }
+        
+        .option-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option-button.o {
+            background: linear-gradient(to bottom, #4ade80, #22c55e);
+            color: white;
+        }
+        
+        .option-button.x {
+            background: linear-gradient(to bottom, #f87171, #ef4444);
+            color: white;
+        }
+        
+        .option-text {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        
+        .feedback {
+            min-height: 60px;
+            font-weight: bold;
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #181818;
+            padding: 10px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .correct {
+            background-color: rgba(74, 222, 128, 0.2);
+            color: #22c55e;
+        }
+        
+        .incorrect {
+            background-color: rgba(248, 113, 113, 0.2);
+            color: #ef4444;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 15px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            background-color: #D4AF37;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .score-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 1.2rem;
+            margin: 15px 0;
+        }
+        
+        .stars {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .star {
+            font-size: 1.5rem;
+            color: #d4d4d4;
+        }
+        
+        .star.filled {
+            color: #FFD700;
+        }
+        
+        .progress {
+            text-align: right;
+            font-size: 1rem;
+            color: #555;
+            margin-top: 10px;
+        }
+        
+        /* 遊戲結束畫面 */
+        .game-over {
+            display: none;
+            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+            border-radius: 20px;
+        }
+        
+        .trophy {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .final-score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #D4AF37;
+        }
+        
+        .message {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        /* 動畫效果 */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #D4AF37;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 10;
+        }
+        
+        .animate-correct {
+            animation: correctAnswer 0.8s forwards;
+        }
+        
+        @keyframes correctAnswer {
+            0% {
+                transform: scale(1);
+                filter: brightness(1);
+            }
+            50% {
+                transform: scale(1.1);
+                filter: brightness(1.2);
+            }
+            75% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .animate-complete {
+            animation: completeGame 1.5s forwards;
+        }
+        
+        @keyframes completeGame {
+            0% {
+                transform: scale(1);
+            }
+            10% {
+                transform: scale(1.1);
+            }
+            20% {
+                transform: scale(1);
+            }
+            30% {
+                transform: scale(1.05);
+            }
+            40% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.03);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        /* 煙火效果 */
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9;
+        }
+        
+        /* 響應式設計 */
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1rem;
+            }
+            
+            .question {
+                font-size: 1.1rem;
+            }
+            
+            .option-button {
+                width: 70px;
+                height: 70px;
+                font-size: 2rem;
+            }
+            
+            .character {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>愉快的聚會 🎉</h1>
+        <p class="subtitle">好主人和好客人 👧👦</p>
+        
+        <div class="character">
+            <div class="face">😊</div>
+        </div>
+        
+        <div class="score-container">
+            <div class="stars">
+                <span class="star">⭐</span>
+                <span class="star">⭐</span>
+                <span class="star">⭐</span>
+                <span class="star">⭐</span>
+                <span class="star">⭐</span>
+            </div>
+            <span id="score">0</span> 分
+        </div>
+        
+        <div class="question-container">
+            <p class="question"><span class="question-number">1</span>下列敘述是否正確？</p>
+        </div>
+        
+        <div class="options">
+            <div class="option" data-value="true">
+                <button class="option-button o">O</button>
+                <p class="option-text">正確</p>
+            </div>
+            <div class="option" data-value="false">
+                <button class="option-button x">X</button>
+                <p class="option-text">不正確</p>
+            </div>
+        </div>
+        
+        <div class="feedback"></div>
+        
+        <p class="progress">問題 <span id="current">1</span>/<span id="total">10</span></p>
+        
+        <div class="controls">
+            <button id="next-btn" disabled>下一題 ➡️</button>
+        </div>
+        
+        <div class="game-over">
+            <div class="trophy">🏆</div>
+            <h2>遊戲結束！</h2>
+            <p class="final-score">你的分數：<span id="final-score">0</span> 分</p>
+            <p class="message">你太棒了！你已經了解如何成為一個好主人和好客人！</p>
+            <button id="restart-btn">再玩一次 🔄</button>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 遊戲元素
+            const questionElement = document.querySelector('.question');
+            const options = document.querySelectorAll('.option');
+            const feedbackElement = document.querySelector('.feedback');
+            const nextButton = document.getElementById('next-btn');
+            const scoreElement = document.getElementById('score');
+            const finalScoreElement = document.getElementById('final-score');
+            const currentQuestion = document.getElementById('current');
+            const totalQuestions = document.getElementById('total');
+            const gameOverScreen = document.querySelector('.game-over');
+            const restartButton = document.getElementById('restart-btn');
+            const stars = document.querySelectorAll('.star');
+            const character = document.querySelector('.character');
+            const characterFace = document.querySelector('.character .face');
+            
+            // 遊戲問題
+            const questions = [
+                {
+                    question: "邀請朋友到家裡前，要先得到家人的同意。",
+                    answer: true
+                },
+                {
+                    question: "邀請朋友時，不需要說清楚時間和地點。",
+                    answer: false
+                },
+                {
+                    question: "當朋友無法參加你的聚會時，可以生氣並哭鬧。",
+                    answer: false
+                },
+                {
+                    question: "當好主人要先幫忙介紹家人與朋友互相認識。",
+                    answer: true
+                },
+                {
+                    question: "到別人家做客時，可以隨意拿取主人家的物品。",
+                    answer: false
+                },
+                {
+                    question: "到別人家做客時，應該有禮貌地向主人的家人打招呼。",
+                    answer: true
+                },
+                {
+                    question: "在別人家的客廳可以奔跑打鬧，增加聚會氣氛。",
+                    answer: false
+                },
+                {
+                    question: "離開前，應該幫忙收拾遊戲、整理環境。",
+                    answer: true
+                },
+                {
+                    question: "珍珍上下樓梯不方便，好朋友應該主動去幫忙她。",
+                    answer: true
+                },
+                {
+                    question: "在別人家打翻了水杯，最好快速溜走，假裝不知道。",
+                    answer: false
+                }
+            ];
+            
+            // 遊戲狀態
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let hasAnswered = false;
+            
+            // 初始化遊戲
+            function initGame() {
+                currentQuestionIndex = 0;
+                score = 0;
+                hasAnswered = false;
+                updateQuestion();
+                updateScore();
+                updateStars();
+                gameOverScreen.style.display = 'none';
+                characterFace.textContent = '😊';
+            }
+            
+            // 更新問題
+            function updateQuestion() {
+                const question = questions[currentQuestionIndex];
+                questionElement.innerHTML = `<span class="question-number">${currentQuestionIndex + 1}</span>${question.question}`;
+                feedbackElement.style.display = 'none';
+                nextButton.disabled = true;
+                hasAnswered = false;
+                currentQuestion.textContent = currentQuestionIndex + 1;
+                totalQuestions.textContent = questions.length;
+            }
+            
+            // 更新分數
+            function updateScore() {
+                scoreElement.textContent = score;
+                finalScoreElement.textContent = score;
+            }
+            
+            // 更新星星
+            function updateStars() {
+                const filledStars = Math.floor(score / (questions.length / 5));
+                stars.forEach((star, index) => {
+                    if (index < filledStars) {
+                        star.classList.add('filled');
+                    } else {
+                        star.classList.remove('filled');
+                    }
+                });
+            }
+            
+            // 檢查答案
+            function checkAnswer(selectedAnswer) {
+                if (hasAnswered) return;
+                
+                const correctAnswer = questions[currentQuestionIndex].answer;
+                hasAnswered = true;
+                nextButton.disabled = false;
+                
+                if (selectedAnswer === correctAnswer) {
+                    // 答對了
+                    score++;
+                    updateScore();
+                    updateStars();
+                    feedbackElement.textContent = getRandomCorrectFeedback();
+                    feedbackElement.className = 'feedback correct';
+                    feedbackElement.style.display = 'block';
+                    character.classList.add('animate-correct');
+                    characterFace.textContent = '😄';
+                    
+                    // 創建煙火/撒花效果
+                    createFireworks();
+                    
+                    setTimeout(() => {
+                        character.classList.remove('animate-correct');
+                    }, 800);
+                } else {
+                    // 答錯了
+                    feedbackElement.textContent = getRandomIncorrectFeedback();
+                    feedbackElement.className = 'feedback incorrect';
+                    feedbackElement.style.display = 'block';
+                    characterFace.textContent = '🤔';
+                }
+            }
+            
+            // 隨機正確回饋訊息
+            function getRandomCorrectFeedback() {
+                const feedback = [
+                    "太棒了！你答對了！🎉",
+                    "哇！你好聰明！💖",
+                    "完全正確！好厲害！🌟",
+                    "答對啦！你真是太棒了！👍",
+                    "好極了！真是了不起！✨",
+                    "你太厲害了！答案完全正確！🎊"
+                ];
+                return feedback[Math.floor(Math.random() * feedback.length)];
+            }
+            
+            // 隨機錯誤回饋訊息
+            function getRandomIncorrectFeedback() {
+                const feedback = [
+                    "嗯...再想想看！😊",
+                    "沒關係，下次加油！💪",
+                    "差一點點，再試試看吧！🌱",
+                    "再思考一下，你可以的！💡",
+                    "沒關係，學習就是不斷嘗試！🌈",
+                    "我們一起來找找正確答案吧！🔍"
+                ];
+                return feedback[Math.floor(Math.random() * feedback.length)];
+            }
+            
+            // 下一題
+            function nextQuestion() {
+                currentQuestionIndex++;
+                characterFace.textContent = '😊';
+                
+                if (currentQuestionIndex >= questions.length) {
+                    endGame();
+                } else {
+                    updateQuestion();
+                }
+            }
+            
+            // 結束遊戲
+            function endGame() {
+                gameOverScreen.style.display = 'flex';
+                gameOverScreen.classList.add('animate-complete');
+                
+                // 根據分數給予不同的結束訊息
+                const message = document.querySelector('.message');
+                if (score === questions.length) {
+                    message.textContent = "太厲害了！你答對了所有問題！你是派對禮儀的專家！🏆";
+                    createManyFireworks();
+                } else if (score >= questions.length * 0.8) {
+                    message.textContent = "好棒！你已經非常了解如何當個好主人和好客人了！下次再接再厲！👏";
+                } else if (score >= questions.length * 0.6) {
+                    message.textContent = "不錯喔！你知道很多社交禮儀，繼續加油！💪";
+                } else {
+                    message.textContent = "謝謝你的參與！多多練習，下次一定會做得更好！🌈";
+                }
+                
+                setTimeout(() => {
+                    gameOverScreen.classList.remove('animate-complete');
+                }, 1500);
+            }
+            
+            // 煙火/撒花效果
+            function createFireworks() {
+                const container = document.querySelector('.game-container');
+                const colors = ['#FFD700', '#FF6B6B', '#4ECDC4', '#FF9A8B', '#A78BFA', '#45B7D1'];
+                
+                for (let i = 0; i < 30; i++) {
+                    setTimeout(() => {
+                        const firework = document.createElement('div');
+                        firework.classList.add('firework');
+                        
+                        // 隨機設定位置、顏色和大小
+                        const size = Math.random() * 8 + 4;
+                        const color = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        firework.style.width = `${size}px`;
+                        firework.style.height = `${size}px`;
+                        firework.style.backgroundColor = color;
+                        
+                        // 將煙火放在答案按鈕附近
+                        const centerX = container.offsetWidth / 2;
+                        const centerY = container.offsetHeight / 2;
+                        
+                        firework.style.left = `${centerX}px`;
+                        firework.style.top = `${centerY}px`;
+                        
+                        container.appendChild(firework);
+                        
+                        // 動畫：煙火從中間向四周散開
+                        const angle = Math.random() * Math.PI * 2;
+                        const distance = Math.random() * 150 + 50;
+                        const dx = Math.cos(angle) * distance;
+                        const dy = Math.sin(angle) * distance;
+                        
+                        // 使用 CSS 動畫
+                        firework.animate([
+                            { transform: 'translate(0, 0)', opacity: 1 },
+                            { transform: `translate(${dx}px, ${dy}px)`, opacity: 0 }
+                        ], {
+                            duration: 1000,
+                            easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+                        });
+                        
+                        // 動畫結束後移除元素
+                        setTimeout(() => {
+                            container.removeChild(firework);
+                        }, 1000);
+                    }, i * 20);
+                }
+            }
+            
+            // 遊戲結束時的大量煙火
+            function createManyFireworks() {
+                for (let j = 0; j < 3; j++) {
+                    setTimeout(() => {
+                        createFireworks();
+                    }, j * 500);
+                }
+            }
+            
+            // 事件監聽
+            options.forEach(option => {
+                option.addEventListener('click', () => {
+                    if (!hasAnswered) {
+                        const selectedValue = option.dataset.value === 'true';
+                        checkAnswer(selectedValue);
+                    }
+                });
+            });
+            
+            nextButton.addEventListener('click', nextQuestion);
+            restartButton.addEventListener('click', initGame);
+            
+            // 洗牌問題順序（Fisher-Yates 演算法）
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+            
+            // 遊戲開始時，洗牌問題順序
+            shuffleArray(questions);
+            
+            // 初始化遊戲
+            initGame();
+        });
+    </script>
+</body>
+</html>
